@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { CountryModule } from './country/country.module';
 import { TopicModule } from './topic/topic.module';
 import { DiscussionModule } from './discussion/discussion.module';
+import { CollaborationModule } from './collaboration/collaboration.module';
 
 @Module({
-  imports: [CountryModule, TopicModule, DiscussionModule],
+  imports: [CountryModule, TopicModule, DiscussionModule, CollaborationModule],
   controllers: [AppController],
   providers: [AppService],
 })
