@@ -1,4 +1,4 @@
-export class Collaboration {
+export class Contribution {
     id: number;
     title: string;
     content: string;
