@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { Country } from './country.entity';
 import { CountryService } from './country.service';
 
@@ -12,8 +12,8 @@ export class CountryController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.countryService.findOne(Number(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.countryService.findOne(id);
   }
 
   @Post()
@@ -22,14 +22,14 @@ export class CountryController {
   }
 
   @Put(':id')
-  update(@Body('name') countryName: string, @Param('id') countryId: string) {
+  update(@Body('name') countryName: string, @Param('id', ParseIntPipe) countryId: number) {
 
-    return this.countryService.update(Number(countryId), countryName);
+    return this.countryService.update(countryId, countryName);
   }
 
   @Delete(':id')
-  delete(@Param('id') countryId: string) {
-    return this.countryService.delete(Number(countryId));
+  delete(@Param('id', ParseIntPipe) countryId: number) {
+    return this.countryService.delete(countryId);
   }
   
 

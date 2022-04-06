@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
 import { ContributionService } from './contribution.service';
 
 @Controller('contribution')
@@ -11,8 +11,8 @@ export class ContributionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.contributionService.findOne(Number(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.contributionService.findOne(id);
   }
 
   @Post()
@@ -21,13 +21,13 @@ export class ContributionController {
   }
 
   @Put(':id')
-  update(@Body() body: any, @Param('id') id: string) {
-    return this.contributionService.update(Number(id), body);
+  update(@Body() body: any, @Param('id', ParseIntPipe) id: number) {
+    return this.contributionService.update(id, body);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.contributionService.delete(Number(id));
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.contributionService.delete(id);
   }
   
 }

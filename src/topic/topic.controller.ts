@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
 import { TopicService } from './topic.service';
 
 @Controller('topic')
@@ -11,8 +11,8 @@ export class TopicController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.topicService.findOne(Number(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.topicService.findOne(id);
   }
 
   @Post()
@@ -21,13 +21,13 @@ export class TopicController {
   }
 
   @Put(':id')
-  update(@Body('title') title: string, @Param('id') id: string) {
-    return this.topicService.update(Number(id), title);
+  update(@Body('title') title: string, @Param('id', ParseIntPipe) id: number) {
+    return this.topicService.update(id, title);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.topicService.delete(Number(id));
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.topicService.delete(id);
   }
   
 }

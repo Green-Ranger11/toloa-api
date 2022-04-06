@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
 import { DiscussionService } from './discussion.service';
 
 @Controller('discussion')
@@ -11,8 +11,8 @@ export class DiscussionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.discussionService.findOne(Number(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.discussionService.findOne(id);
   }
 
   @Post()
@@ -21,13 +21,13 @@ export class DiscussionController {
   }
 
   @Put(':id')
-  update(@Body() body: any, @Param('id') id: string) {
-    return this.discussionService.update(Number(id), body);
+  update(@Body() body: any, @Param('id', ParseIntPipe) id: number) {
+    return this.discussionService.update(id, body);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.discussionService.delete(Number(id));
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.discussionService.delete(id);
   }
 
 }
