@@ -7,9 +7,10 @@ import { DiscussionModule } from './discussion/discussion.module';
 import { ContributionModule } from './contribution/contribution.module';
 import { CommentModule } from './comment/comment.module';
 import { UserModule } from './user/user.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
-  imports: [CountryModule, TopicModule, DiscussionModule, ContributionModule, CommentModule, UserModule ],
+  imports: [CountryModule, TopicModule, DiscussionModule, ContributionModule, CommentModule, UserModule, OrganizationModule ],
   controllers: [AppController],
   providers: [AppService],
 })
