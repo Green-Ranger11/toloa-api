@@ -1,9 +1,11 @@
-import { Body, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Discussion } from './discussion.entity';
+import { CreateDiscussionDto } from './dto/create-discussion.dto';
+import { UpdateDiscussionDto } from './dto/update-discussion.dto';
 
 @Injectable()
 export class DiscussionService {
-  private readonly discussions: Discussion[] = [
+  private readonly discussions = [
     {
       id: 1,
       title: 'Discussion 1',
@@ -37,30 +39,27 @@ export class DiscussionService {
   findOne(id: number) {
     const discussion = this.discussions.find(discussion => discussion.id === id);
     if (!discussion) {
-      // return 404
-      return new NotFoundException();
+      throw new NotFoundException();
     }
     return discussion;
   }
 
-  create(discussion: Discussion): Discussion {
-    let newDiscussion = {...discussion, id: this.discussions.length + 1, createdAt: new Date(), updatedAt: new Date()};
+  create(createDiscussionDto: CreateDiscussionDto) {
+    let newDiscussion = {...createDiscussionDto, id: this.discussions.length + 1, createdAt: new Date(), updatedAt: new Date()};
     this.discussions.push(newDiscussion);
-    return discussion;
+    return newDiscussion;
   }
 
-  update(id: number, discussion: Discussion) {
-    let discussionToUpdate = this.discussions.find(discussion => discussion.id === id);
+  update(id: number, updateDiscussionDto: UpdateDiscussionDto) {
+    let discussionToUpdate = this.findOne(id);
     const index = this.discussions.indexOf(discussionToUpdate);
-    if(!discussionToUpdate) return new NotFoundException();
-    discussionToUpdate = {...discussionToUpdate, ...discussion, updatedAt: new Date()};
+    discussionToUpdate = {...discussionToUpdate, ...updateDiscussionDto, updatedAt: new Date()};
     this.discussions[index] = discussionToUpdate;
     return discussionToUpdate;
   }
 
   delete(id: number) {
-    const discussion = this.discussions.find(discussion => discussion.id === id);
-    if(!discussion) return new NotFoundException();
+    const discussion = this.findOne(id);
     const index = this.discussions.indexOf(discussion);
     this.discussions.splice(index, 1);
     return true;

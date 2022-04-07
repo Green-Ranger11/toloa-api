@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Patch, ParseIntPipe } from '@nestjs/common';
 import { CommentService } from './comment.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('comment')
 export class CommentController {
@@ -11,13 +13,13 @@ export class CommentController {
   }
 
   @Post(":discussionId/add")
-  create(@Param('discussionId', ParseIntPipe) discussionId: number, @Body("content") content: string, @Body("createdBy") createdBy: string) {
-    return this.commentService.create(discussionId, content, createdBy);
+  create(@Param('discussionId', ParseIntPipe) discussionId: number, @Body() createCommentDto: CreateCommentDto) {
+    return this.commentService.create(discussionId, createCommentDto);
   }
 
-  @Put(":discussionId/update/:id")
-  update(@Param('discussionId', ParseIntPipe) discussionId: number, @Param('id', ParseIntPipe) id: number, @Body("content") content: string) {
-    return this.commentService.update(discussionId, id, content);
+  @Patch(":discussionId/update/:id")
+  update(@Param('discussionId', ParseIntPipe) discussionId: number, @Param('id', ParseIntPipe) id: number, @Body() updateContentDto: UpdateCommentDto) {
+    return this.commentService.update(discussionId, id, updateContentDto);
   }
 
   @Delete(":discussionId/remove/:id")

@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -14,8 +16,8 @@ export class CommentService {
 
   ]
 
-  create(discussionId: number, content: string, createdBy: string) {
-    let newComment = {content, discussionId, createdBy, id: this.comments.length + 1, createdAt: new Date(), updatedAt: new Date()};
+  create(discussionId: number, createCommentDto: CreateCommentDto) {
+    let newComment = {content: createCommentDto.content, discussionId, createdBy: createCommentDto.createdBy, id: this.comments.length + 1, createdAt: new Date(), updatedAt: new Date()};
     this.comments.push(newComment);
     return newComment;
   }
@@ -24,11 +26,11 @@ export class CommentService {
     return this.comments.filter(comment => comment.discussionId === discussionId);
   }
 
-  update(discussionId: number, id: number, updatedContent: string) {
+  update(discussionId: number, id: number, updateContentDto: UpdateCommentDto) {
     let commentToUpdate = this.comments.find(comment => comment.discussionId === discussionId && comment.id === id);
     const index = this.comments.indexOf(commentToUpdate);
     if(!commentToUpdate) return new NotFoundException();
-    commentToUpdate = {...commentToUpdate, content: updatedContent, updatedAt: new Date()};
+    commentToUpdate = {...commentToUpdate, content: updateContentDto.content, updatedAt: new Date()};
     this.comments[index] = commentToUpdate;
     return commentToUpdate;
   }

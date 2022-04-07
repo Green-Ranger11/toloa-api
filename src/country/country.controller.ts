@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { Country } from './country.entity';
 import { CountryService } from './country.service';
+import { CreateCountryDto } from './dto/create-country.dto';
+import { UpdateCountryDto } from './dto/update-country.dto';
 
 @Controller('country')
 export class CountryController {
@@ -17,14 +19,14 @@ export class CountryController {
   }
 
   @Post()
-  create(@Body('name') countryName : string) {
-    return this.countryService.create(countryName);
+  create(@Body() createCountryDto: CreateCountryDto) {
+    return this.countryService.create(createCountryDto);
   }
 
-  @Put(':id')
-  update(@Body('name') countryName: string, @Param('id', ParseIntPipe) countryId: number) {
+  @Patch(':id')
+  update(@Param('id', ParseIntPipe) countryId: number, @Body() updateCountryDto: UpdateCountryDto) {
 
-    return this.countryService.update(countryId, countryName);
+    return this.countryService.update(countryId, updateCountryDto);
   }
 
   @Delete(':id')

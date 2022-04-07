@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Patch, ParseIntPipe } from '@nestjs/common';
 import { DiscussionService } from './discussion.service';
+import { CreateDiscussionDto } from './dto/create-discussion.dto';
+import { UpdateDiscussionDto } from './dto/update-discussion.dto';
 
 @Controller('discussion')
 export class DiscussionController {
@@ -16,13 +18,13 @@ export class DiscussionController {
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.discussionService.create(body);
+  create(@Body() createDiscussionDto: CreateDiscussionDto) {
+    return this.discussionService.create(createDiscussionDto);
   }
 
-  @Put(':id')
-  update(@Body() body: any, @Param('id', ParseIntPipe) id: number) {
-    return this.discussionService.update(id, body);
+  @Patch(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateDiscussionDto: UpdateDiscussionDto) {
+    return this.discussionService.update(id, updateDiscussionDto);
   }
 
   @Delete(':id')

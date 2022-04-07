@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, ParseIntPipe, Patch } from '@nestjs/common';
 import { ContributionService } from './contribution.service';
+import { CreateContributionDto } from './dto/create-contribution.dto';
+import { UpdateContributionDto } from './dto/update-contribution.dto';
 
 @Controller('contribution')
 export class ContributionController {
@@ -16,13 +18,13 @@ export class ContributionController {
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.contributionService.create(body);
+  create(@Body() createContributionDto: CreateContributionDto) {
+    return this.contributionService.create(createContributionDto);
   }
 
-  @Put(':id')
-  update(@Body() body: any, @Param('id', ParseIntPipe) id: number) {
-    return this.contributionService.update(id, body);
+  @Patch(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateContributionDto: UpdateContributionDto) {
+    return this.contributionService.update(id, updateContributionDto);
   }
 
   @Delete(':id')

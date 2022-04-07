@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Country } from './country.entity';
+import { CreateCountryDto } from './dto/create-country.dto';
+import { UpdateCountryDto } from './dto/update-country.dto';
 
 @Injectable()
 export class CountryService {
@@ -17,33 +19,29 @@ export class CountryService {
   findOne(id: number) {
     const country = this.countries.find(country => country.id === id);
     if (!country) {
-      // return 404
-      return new NotFoundException();
+      throw new NotFoundException();
     }
     return country;
   }
 
-  create(countryName: string): Country {
+  create(createCountryDto: CreateCountryDto) {
     const country = new Country();
-    country.name = countryName;
+    country.name = createCountryDto.name;
     country.id = this.countries.length + 1;
     this.countries.push(country);
     return country;
   }
 
-  update(countryId: number, countryName: string) {
-    const country = this.findOne(countryId);
-    if(!country) return new NotFoundException();
-    country.name = countryName;
+  update(countryId: number, updateCountryDto: UpdateCountryDto) {
+    let country = this.findOne(countryId);
+    country = {...country, ...updateCountryDto}
     return country;
   }
 
   delete(id: number) {
-    const country = this.countries.find(country => country.id === id);
-    if(!country) return new NotFoundException();
+    const country = this.findOne(id);
     const index = this.countries.indexOf(country);
     this.countries.splice(index, 1);
-    return true;
   }
 
 }

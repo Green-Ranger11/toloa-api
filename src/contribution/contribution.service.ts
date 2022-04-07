@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Contribution } from './contribution.entity';
+import { CreateContributionDto } from './dto/create-contribution.dto';
+import { UpdateContributionDto } from './dto/update-contribution.dto';
 
 @Injectable()
 export class ContributionService {
@@ -43,24 +45,22 @@ export class ContributionService {
     return contribution;
   }
 
-  create(contribution: Contribution){
-    let newContribution = {...contribution, id: this.contributions.length + 1, createdAt: new Date(), updatedAt: new Date()};
+  create(createContributionDto: CreateContributionDto){
+    let newContribution = {...createContributionDto, id: this.contributions.length + 1, createdAt: new Date(), updatedAt: new Date()};
     this.contributions.push(newContribution);
     return newContribution;
   }
 
-  update(id: number, contribution: Contribution){
-    let contributionToUpdate = this.contributions.find(contribution => contribution.id === id);
+  update(id: number, updateContributionDto: UpdateContributionDto){
+    let contributionToUpdate = this.findOne(id);
     const index = this.contributions.indexOf(contributionToUpdate);
-    if(!contributionToUpdate) throw new NotFoundException();
-    contributionToUpdate = {...contributionToUpdate, ...contribution, updatedAt: new Date()};
+    contributionToUpdate = {...contributionToUpdate, ...updateContributionDto, updatedAt: new Date()};
     this.contributions[index] = contributionToUpdate;
     return contributionToUpdate;
   }
 
   delete(id: number){
-    const contribution = this.contributions.find(collaboration => collaboration.id === id);
-    if(!contribution) throw new NotFoundException();
+    const contribution = this.findOne(id);
     const index = this.contributions.indexOf(contribution);
     this.contributions.splice(index, 1);
     return true;

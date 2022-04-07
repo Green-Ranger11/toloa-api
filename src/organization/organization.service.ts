@@ -25,8 +25,7 @@ export class OrganizationService {
   }
 
   update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
-    const org = this.organizations.find(organization => organization.id === id);
-    if(!org) throw new NotFoundException(`Organization with ID "${id}" not found`);
+    const org = this.findOne(id);
     const index = this.organizations.indexOf(org);
     if(updateOrganizationDto?.name){
       org.name = updateOrganizationDto.name;
@@ -36,8 +35,7 @@ export class OrganizationService {
   }
 
   remove(id: number) {
-    const org = this.organizations.find(organization => organization.id === id);
-    if(!org) throw new NotFoundException(`Organization with ID "${id}" not found`);
+    const org = this.findOne(id);
     const index = this.organizations.indexOf(org);
     this.organizations.splice(index, 1);
   }

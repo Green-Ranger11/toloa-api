@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Patch, ParseIntPipe } from '@nestjs/common';
 import { TopicService } from './topic.service';
 
 @Controller('topic')
@@ -20,7 +20,7 @@ export class TopicController {
     return this.topicService.create(title);
   }
 
-  @Put(':id')
+  @Patch(':id')
   update(@Body('title') title: string, @Param('id', ParseIntPipe) id: number) {
     return this.topicService.update(id, title);
   }
