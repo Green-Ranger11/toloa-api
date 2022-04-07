@@ -1,0 +1,10 @@
+{
+  "type": "pg",
+  "host": "localhost",
+  "port": 5432,
+  "username": "root",
+  "password": "test",
+  "database": "test",
+  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "synchronize": true
+}
