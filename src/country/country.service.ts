@@ -16,8 +16,10 @@ export class CountryService {
     return this.countriesRepository.find();
   }
 
-  findOne(id: number) {
-    return this.countriesRepository.findOneOrFail(id);
+  async findOne(id: number) {
+    const country = await this.countriesRepository.findOne(id);
+    if(!country) throw new NotFoundException(`Country with id ${id} not found`);
+    return country;
   }
 
   create(createCountryDto: CreateCountryDto) {

@@ -21,18 +21,20 @@ export class OrganizationService {
     return this.organizationsRepository.find();
   }
 
-  findOne(id: number) {
-    return this.organizationsRepository.findOneOrFail(id);
+  async findOne(id: number) {
+    const organization = await this.organizationsRepository.findOne(id);
+    if(!organization) throw new NotFoundException(`Organization with id ${id} not found`);
+    return organization;
   }
 
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
-     const organization = await this.organizationsRepository.findOneOrFail(id);
-      organization.name = updateOrganizationDto.name;
-      return this.organizationsRepository.save(organization);
+     const organization = await this.findOne(id);
+     organization.name = updateOrganizationDto.name;
+     return this.organizationsRepository.save(organization);
   }
 
   async remove(id: number) {
-    const organization = await this.organizationsRepository.findOneOrFail(id);
+    const organization = await this.findOne(id);
     return this.organizationsRepository.remove(organization);
   }
 }

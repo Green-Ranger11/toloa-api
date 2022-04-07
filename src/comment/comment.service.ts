@@ -31,7 +31,7 @@ export class CommentService {
 
   async findCommentsByDiscussionId(discussionId: number) {
     const discussion = await this.discussionService.findOne(discussionId);
-    return discussion?.comments;
+    return discussion?.comments || [];
   }
 
   async update(_discussionId: number, id: number, updateContentDto: UpdateCommentDto) {

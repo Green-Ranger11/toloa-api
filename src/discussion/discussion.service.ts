@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../user/user.entity';
 import { Discussion } from './discussion.entity';
 import { CreateDiscussionDto } from './dto/create-discussion.dto';
 import { UpdateDiscussionDto } from './dto/update-discussion.dto';
@@ -22,8 +21,10 @@ export class DiscussionService {
     return this.discussionsRepository.find();
   }
 
-  findOne(id: number) {
-    return this.discussionsRepository.findOneOrFail(id);
+  async findOne(id: number) {
+    const discussion = await this.discussionsRepository.findOne(id);
+    if(!discussion) throw new NotFoundException(`Discussion with id ${id} not found`);
+    return discussion;
   }
 
   async create(createDiscussionDto: CreateDiscussionDto) {

@@ -21,7 +21,9 @@ export class ContributionService {
   }
 
   findOne(id: number){
-    return this.contributionsRepository.findOneOrFail(id);
+    const contribution = this.contributionsRepository.findOne(id);
+    if(!contribution) throw new NotFoundException(`Contribution with id ${id} not found`);
+    return contribution;
   }
 
   async create(createContributionDto: CreateContributionDto){
