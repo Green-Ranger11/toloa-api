@@ -1,55 +1,46 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { OrganizationService } from '../organization/organization.service';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserService {
-  users = [
-    { id: 1, username: 'johnjones', firstName: 'John', lastName: 'Jones', password: '123', role: 'admin', organizationId: 1 },
-    { id: 2, username: 'johndoe', firstName: 'John', lastName: 'Doe', password: '123', role: 'user', organizationId: 1 },
-    { id: 3, username: 'janedoe', firstName: 'Jane', lastName: 'Doe', password: '123', role: 'user', organizationId: 2 },
-  ]
 
-  create(createUserDto: CreateUserDto) {
-    const user = {
-      id: this.users.length + 1,
-      username: createUserDto.username,
-      firstName: createUserDto.firstName,
-      lastName: createUserDto.lastName,
-      password: createUserDto.password,
-      role: 'user',
-      organizationId: createUserDto.organizationId,
-    }
-    this.users.push(user);
-    return user;
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>,
+    private organizationService: OrganizationService
+  ) {}
+
+  async create(createUserDto: CreateUserDto) {
+    const organization = await this.organizationService.findOne(createUserDto.organizationId);
+    let user = new User();
+    user.firstName = createUserDto.firstName;
+    user.lastName = createUserDto.lastName;
+    user.username = createUserDto.username;
+    user.password = createUserDto.password;
+    user.organization = organization
+    return this.usersRepository.save(user);
   }
 
   findAll() {
-    return [...this.users];
+    return this.usersRepository.find();
   }
 
   findOne(id: number) {
-    const user = this.users.find(user => user.id === id);
-    if(!user) throw new NotFoundException(`User with ID "${id}" not found`);
-    return user;
+    return this.usersRepository.findOneOrFail(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    let user = this.users.find(user => user.id === id);
-    if(!user) throw new NotFoundException(`User with ID "${id}" not found`);
-    const index = this.users.indexOf(user);
-    user = {
-      ...user,
-      ...updateUserDto,
-    }
-    this.users[index] = user;
-    return user;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    let user = await this.findOne(id);
+    user = {...user, ...updateUserDto};
+    return this.usersRepository.save(user);
   }
 
-  remove(id: number) {
-    const user = this.users.find(user => user.id === id);
-    if(!user) throw new NotFoundException(`User with ID "${id}" not found`);
-    const index = this.users.indexOf(user);
-    this.users.splice(index, 1);
+ async remove(id: number) {
+    const user = await this.findOne(id);
+    return this.usersRepository.delete(user);
   }
 }

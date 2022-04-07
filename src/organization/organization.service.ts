@@ -1,42 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
-
+import { Organization } from './organization.entity';
 @Injectable()
 export class OrganizationService {
 
-  organizations = [{ id: 1, name: 'UNDP'}, { id: 2, name: 'SPREP'}];
+  constructor(
+    @InjectRepository(Organization) private organizationsRepository: Repository<Organization>
+  ) {}
 
   create(createOrganizationDto: CreateOrganizationDto) {
-    this.organizations.push({
-      id: this.organizations.length + 1,
-      name: createOrganizationDto.name,
-    });
+    let organization = new Organization();
+    organization.name = createOrganizationDto.name;
+    return this.organizationsRepository.save(organization);
   }
 
   findAll() {
-    return [...this.organizations];
+    return this.organizationsRepository.find();
   }
 
   findOne(id: number) {
-    const org = this.organizations.find(organization => organization.id === id);
-    if(!org) throw new NotFoundException(`Organization with ID "${id}" not found`);
-    return org;
+    return this.organizationsRepository.findOneOrFail(id);
   }
 
-  update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
-    const org = this.findOne(id);
-    const index = this.organizations.indexOf(org);
-    if(updateOrganizationDto?.name){
-      org.name = updateOrganizationDto.name;
-      this.organizations[index] = org;
-    }
-    return org;
+  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+     const organization = await this.organizationsRepository.findOneOrFail(id);
+      organization.name = updateOrganizationDto.name;
+      return this.organizationsRepository.save(organization);
   }
 
-  remove(id: number) {
-    const org = this.findOne(id);
-    const index = this.organizations.indexOf(org);
-    this.organizations.splice(index, 1);
+  async remove(id: number) {
+    const organization = await this.organizationsRepository.findOneOrFail(id);
+    return this.organizationsRepository.remove(organization);
   }
 }

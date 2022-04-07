@@ -9,7 +9,7 @@ export class CountryController {
   constructor(private countryService: CountryService) {}
 
   @Get()
-  findAll(): Country[] {
+  findAll() {
     return this.countryService.findAll();
   }
 

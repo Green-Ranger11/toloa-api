@@ -1,73 +1,61 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Contribution } from './contribution.entity';
 import { CreateContributionDto } from './dto/create-contribution.dto';
 import { UpdateContributionDto } from './dto/update-contribution.dto';
+import { UserService } from '../user/user.service';
+import { TopicService } from '../topic/topic.service';
 
 @Injectable()
 export class ContributionService {
-  contributions = [
-    {
-      id: 1,
-      title: 'Contribution 1',
-      content: 'Content 1',
-      attachment: '',
-      createdBy: 'User 1',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: 2,
-      title: 'Contribution 2',
-      content: 'Content 2',
-      attachment: '',
-      createdBy: 'User 2',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: 3,
-      title: 'Contribution 3',
-      content: 'Content 3',
-      attachment: '',
-      createdBy: 'User 3',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
+  
+  constructor(
+    @InjectRepository(Contribution) private readonly contributionsRepository: Repository<Contribution>,
+    private readonly usersService: UserService,
+    private readonly topicsService: TopicService
+  ){}
 
   findAll(){
-    return this.contributions;
+    return this.contributionsRepository.find();
   }
 
   findOne(id: number){
-    const contribution = this.contributions.find(collaboration => collaboration.id === id);
-    if(!contribution) throw new NotFoundException();
-    return contribution;
+    return this.contributionsRepository.findOneOrFail(id);
   }
 
-  create(createContributionDto: CreateContributionDto){
-    let newContribution = {...createContributionDto, id: this.contributions.length + 1, createdAt: new Date(), updatedAt: new Date()};
-    this.contributions.push(newContribution);
-    return newContribution;
+  async create(createContributionDto: CreateContributionDto){
+    const USER_ID = 1;
+    const user = await this.usersService.findOne(USER_ID);
+
+    const TOPIC_ID = createContributionDto.topicId;
+    const topic = await this.topicsService.findOne(TOPIC_ID);
+
+    let contribution = new Contribution();
+    contribution.title = createContributionDto.title;
+    contribution.content = createContributionDto.content;
+    contribution.attachment = createContributionDto.attachment;
+    contribution.createdBy = user;
+    contribution.topic = topic;
+    contribution.createdAt = new Date();
+    contribution.updatedAt = new Date();
+
+    // TODO: ADD COUNTRIES AND ORGANIZATIONS
+    return this.contributionsRepository.save(contribution);
   }
 
-  update(id: number, updateContributionDto: UpdateContributionDto){
-    let contributionToUpdate = this.findOne(id);
-    const index = this.contributions.indexOf(contributionToUpdate);
-    contributionToUpdate = {...contributionToUpdate, ...updateContributionDto, updatedAt: new Date()};
-    this.contributions[index] = contributionToUpdate;
-    return contributionToUpdate;
+  async update(id: number, updateContributionDto: UpdateContributionDto){
+    const contribution = await this.findOne(id);
+    contribution.title = updateContributionDto.title;
+    contribution.content = updateContributionDto.content;
+    contribution.attachment = updateContributionDto.attachment;
+    contribution.updatedAt = new Date();
+    return this.contributionsRepository.save(contribution);
   }
 
-  delete(id: number){
-    const contribution = this.findOne(id);
-    const index = this.contributions.indexOf(contribution);
-    this.contributions.splice(index, 1);
-    return true;
+  async delete(id: number){
+    const contribution = await this.findOne(id);
+    return this.contributionsRepository.remove(contribution);
   }
-
-
-  
-
 }
 

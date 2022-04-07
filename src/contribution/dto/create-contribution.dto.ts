@@ -3,7 +3,8 @@ export class CreateContributionDto {
   title: string;
   content: string;
   attachment: string;
-  createdBy: string;
+  topicId: number;
+  createdBy: number;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,43 +1,59 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Discussion } from './discussion.entity';
 import { CreateDiscussionDto } from './dto/create-discussion.dto';
 import { UpdateDiscussionDto } from './dto/update-discussion.dto';
+import { UserService } from '../user/user.service';
+import { TopicService } from '../topic/topic.service';
 
 @Injectable()
 export class DiscussionService {
-  private readonly discussions = [];
 
-  findAll(): Discussion[] {
-    return this.discussions;
+  constructor(
+    @InjectRepository(Discussion) private discussionsRepository: Repository<Discussion>,
+    private userService: UserService,
+    private topicService: TopicService
+  ) {}
+
+
+  findAll() {
+    return this.discussionsRepository.find();
   }
 
   findOne(id: number) {
-    const discussion = this.discussions.find(discussion => discussion.id === id);
-    if (!discussion) {
-      throw new NotFoundException();
-    }
-    return discussion;
+    return this.discussionsRepository.findOneOrFail(id);
   }
 
-  create(createDiscussionDto: CreateDiscussionDto) {
-    let newDiscussion = {...createDiscussionDto, id: this.discussions.length + 1, createdAt: new Date(), updatedAt: new Date()};
-    this.discussions.push(newDiscussion);
-    return newDiscussion;
+  async create(createDiscussionDto: CreateDiscussionDto) {
+    const USER_ID = 1;
+    const user = await this.userService.findOne(USER_ID);
+
+    const TOPIC_ID = createDiscussionDto?.topicId;
+    const topic = await this.topicService.findOne(TOPIC_ID);
+
+    let discussion = new Discussion();
+    discussion.title = createDiscussionDto.title;
+    discussion.content = createDiscussionDto.content;
+    discussion.createdBy = user;
+    discussion.topic = topic;
+    discussion.createdAt = new Date();
+    discussion.updatedAt = new Date();
+
+    return this.discussionsRepository.save(discussion);
   }
 
-  update(id: number, updateDiscussionDto: UpdateDiscussionDto) {
-    let discussionToUpdate = this.findOne(id);
-    const index = this.discussions.indexOf(discussionToUpdate);
-    discussionToUpdate = {...discussionToUpdate, ...updateDiscussionDto, updatedAt: new Date()};
-    this.discussions[index] = discussionToUpdate;
-    return discussionToUpdate;
+  async update(id: number, updateDiscussionDto: UpdateDiscussionDto) {
+    const discussion = await this.findOne(id);
+    discussion.title = updateDiscussionDto.title;
+    discussion.content = updateDiscussionDto.content;
+    discussion.updatedAt = new Date();
+    return this.discussionsRepository.save(discussion);
   }
 
-  delete(id: number) {
-    const discussion = this.findOne(id);
-    const index = this.discussions.indexOf(discussion);
-    this.discussions.splice(index, 1);
-    return true;
+  async delete(id: number) { 
+    const discussion = await this.findOne(id);
+    return this.discussionsRepository.remove(discussion);
   }
 }

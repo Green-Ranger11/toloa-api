@@ -6,8 +6,8 @@ import { Comment } from '../comment/comment.entity';
 import { Organization } from '../organization/organization.entity';
 
 export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
+  ADMIN = 'admin',
+  USER = 'user',
 }
 @Entity()
 export class User {

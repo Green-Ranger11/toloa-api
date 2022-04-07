@@ -1,46 +1,51 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DiscussionService } from '../discussion/discussion.service';
+import { UserService } from '../user/user.service';
+import { Repository } from 'typeorm';
+import { Comment } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
-  comments = [
-    {
-      id: 1,
-      content: 'Content 1',
-      discussionId: 1,
-      createdBy: 'User 1',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
 
-  ]
+  constructor(
+    @InjectRepository(Comment) private commentsRepository: Repository<Comment>, 
+    private discussionService: DiscussionService,
+    private userService: UserService
+    ){}
 
-  create(discussionId: number, createCommentDto: CreateCommentDto) {
-    let newComment = {content: createCommentDto.content, discussionId, createdBy: 'randomUser', id: this.comments.length + 1, createdAt: new Date(), updatedAt: new Date()};
-    this.comments.push(newComment);
-    return newComment;
+  async create(discussionId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
+    const USER_ID = 1;
+    const user = await this.userService.findOne(USER_ID);
+    const discussion = await this.discussionService.findOne(discussionId);
+    const comment = new Comment();
+    comment.discussion = discussion;
+    comment.content = createCommentDto.content;
+    comment.createdBy = user;
+    comment.createdAt = new Date();
+    comment.updatedAt = new Date();
+    return this.commentsRepository.save(comment);
   }
 
-  findCommentsByDiscussionId(discussionId: number) {
-    return this.comments.filter(comment => comment.discussionId === discussionId);
+  async findCommentsByDiscussionId(discussionId: number) {
+    const discussion = await this.discussionService.findOne(discussionId);
+    return discussion?.comments;
   }
 
-  update(discussionId: number, id: number, updateContentDto: UpdateCommentDto) {
-    let commentToUpdate = this.comments.find(comment => comment.discussionId === discussionId && comment.id === id);
-    const index = this.comments.indexOf(commentToUpdate);
-    if(!commentToUpdate) return new NotFoundException();
-    commentToUpdate = {...commentToUpdate, content: updateContentDto.content, updatedAt: new Date()};
-    this.comments[index] = commentToUpdate;
-    return commentToUpdate;
+  async update(_discussionId: number, id: number, updateContentDto: UpdateCommentDto) {
+    const comment = await this.commentsRepository.findOne(id);
+    if(!comment) throw new NotFoundException(); 
+    comment.content = updateContentDto.content;
+    comment.updatedAt = new Date();
+    return this.commentsRepository.save(comment);
   }
 
-  delete(discussionId: number, id: number) {
-    const comment = this.comments.find(comment => comment.discussionId === discussionId && comment.id === id);
-    if(!comment) return new NotFoundException();
-    const index = this.comments.indexOf(comment);
-    this.comments.splice(index, 1);
-    return true;
+  async delete(_discussionId: number, id: number) {
+    const comment = await this.commentsRepository.findOne(id);
+    if(!comment) throw new NotFoundException(); 
+    return this.commentsRepository.remove(comment);
   }
 
 }
