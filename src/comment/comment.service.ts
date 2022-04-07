@@ -17,7 +17,7 @@ export class CommentService {
   ]
 
   create(discussionId: number, createCommentDto: CreateCommentDto) {
-    let newComment = {content: createCommentDto.content, discussionId, createdBy: createCommentDto.createdBy, id: this.comments.length + 1, createdAt: new Date(), updatedAt: new Date()};
+    let newComment = {content: createCommentDto.content, discussionId, createdBy: 'randomUser', id: this.comments.length + 1, createdAt: new Date(), updatedAt: new Date()};
     this.comments.push(newComment);
     return newComment;
   }

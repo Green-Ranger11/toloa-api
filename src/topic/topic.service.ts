@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Topic } from './topic.entity';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class TopicService {
@@ -28,11 +29,11 @@ export class TopicService {
     const topic = new Topic();
     topic.title = topicTitle;
     topic.id = this.topics.length + 1;
-    topic.createdBy = 'admin';
+    topic.createdBy = new User();
     topic.createdAt = new Date();
     topic.updatedAt = new Date();
     topic.id = this.topics.length + 1;
-    this.topics.push(topic);
+    this.topics.push(topic as any);
     return topic;
   }
 

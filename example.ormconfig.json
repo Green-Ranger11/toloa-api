@@ -1,8 +1,8 @@
 {
-  "type": "pg",
+  "type": "postgres",
   "host": "localhost",
   "port": 5432,
-  "username": "root",
+  "username": "postgres",
   "password": "test",
   "database": "test",
   "entities": ["dist/**/*.entity{.ts,.js}"],
