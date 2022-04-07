@@ -11,6 +11,9 @@ export class Topic {
   @Column({unique: true})
   title: string;
 
+  @Column()
+  description: string;
+
   @OneToMany(_ => Contribution, contribution => contribution.topic)
   contributions: Contribution[];
 

@@ -30,6 +30,7 @@ export class TopicService {
     const user = await this.usersService.findOne(USER_ID);
     let topic = new Topic();
     topic.title = createTopicDto.title;
+    topic.description = createTopicDto.description;
     topic.createdBy = user;
     topic.createdAt = new Date();
     topic.updatedAt = new Date();
