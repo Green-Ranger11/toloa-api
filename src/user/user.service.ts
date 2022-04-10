@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { OrganizationService } from '../organization/organization.service';
 import { User } from './user.entity';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
@@ -23,6 +24,17 @@ export class UserService {
     user.password = createUserDto.password;
     user.organization = organization
     return this.usersRepository.save(user);
+  }
+
+  async login(loginUserDt: LoginUserDto){
+    const user = await this.usersRepository.findOne({
+      where: {
+        username: loginUserDt.username,
+      }
+    });
+    if(!user) throw new NotFoundException(`User with username ${loginUserDt.username} not found`);
+    if(user.password !== loginUserDt.password) throw new BadRequestException(`Password is incorrect`);
+    return user;
   }
 
   findAll() {
