@@ -38,11 +38,11 @@ export class UserService {
   }
 
   findAll() {
-    return this.usersRepository.find({ relations: ['organization'] });
+    return this.usersRepository.find({ relations: ['organization', 'topics', 'contributions', 'discussions', 'comments'] });
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.usersRepository.findOne(id, {relations: ['organization', 'topics', 'contributions', 'discussions', 'comments',]});
     if(!user) throw new NotFoundException(`User with id ${id} not found`);
     return user;
   }

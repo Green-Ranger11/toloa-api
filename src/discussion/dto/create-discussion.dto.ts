@@ -12,4 +12,8 @@ export class CreateDiscussionDto {
   @IsNumber()
   @IsNotEmpty()
   topicId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  createdBy: number;
 }

@@ -18,11 +18,11 @@ export class OrganizationService {
   }
 
   findAll() {
-    return this.organizationsRepository.find();
+    return this.organizationsRepository.find({relations: ['users']});
   }
 
   async findOne(id: number) {
-    const organization = await this.organizationsRepository.findOne(id);
+    const organization = await this.organizationsRepository.findOne(id, {relations: ['users']});
     if(!organization) throw new NotFoundException(`Organization with id ${id} not found`);
     return organization;
   }

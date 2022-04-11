@@ -6,5 +6,10 @@ export class CreateCommentDto {
   content: string;
 
   @IsNumber()
+  @IsNotEmpty()
   discussionId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  createdBy: number;
 }

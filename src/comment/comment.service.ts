@@ -17,8 +17,7 @@ export class CommentService {
     ){}
 
   async create(discussionId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
-    const USER_ID = 1;
-    const user = await this.userService.findOne(USER_ID);
+    const user = await this.userService.findOne(createCommentDto.createdBy);
     const discussion = await this.discussionService.findOne(discussionId);
     const comment = new Comment();
     comment.discussion = discussion;

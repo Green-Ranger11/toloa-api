@@ -16,17 +16,17 @@ export class TopicService {
   
 
   findAll() {
-    return this.topicsRepository.find();
+    return this.topicsRepository.find({relations: ['createdBy', 'discussions', 'discussions.comments', 'contributions']});
   }
 
   async findOne(id: number) {
-    const topic = await this.topicsRepository.findOne(id);
+    const topic = await this.topicsRepository.findOne(id, {relations: ['createdBy', 'discussions','discussions.comments', 'contributions']});
     if(!topic) throw new NotFoundException(`Topic with id ${id} not found`);
     return topic;
   }
 
   async create(createTopicDto: CreateTopicDto) {
-    const USER_ID = 1;
+    const USER_ID = createTopicDto.createdBy;
     const user = await this.usersService.findOne(USER_ID);
     let topic = new Topic();
     topic.title = createTopicDto.title;

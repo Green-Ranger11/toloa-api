@@ -27,7 +27,7 @@ export class ContributionService {
   }
 
   async create(createContributionDto: CreateContributionDto){
-    const USER_ID = 1;
+    const USER_ID = createContributionDto.createdBy;
     const user = await this.usersService.findOne(USER_ID);
 
     const TOPIC_ID = createContributionDto.topicId;
