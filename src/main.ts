@@ -9,6 +9,7 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.use(helmet());
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Toloa API')
